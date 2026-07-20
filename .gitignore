@@ -1,0 +1,19 @@
+# Entorno virtual
+venv/
+env/
+.venv/
+
+# Variables de entorno (contiene tus API keys, NUNCA subir esto)
+.env
+
+# Archivos de Python compilados
+__pycache__/
+*.pyc
+*.pyo
+
+# Configuración de VS Code (opcional)
+.vscode/
+
+# Archivos del sistema
+.DS_Store
+Thumbs.db
