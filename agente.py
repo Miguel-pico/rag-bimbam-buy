@@ -8,6 +8,15 @@ from dotenv import load_dotenv
 load_dotenv()
 from langchain_pinecone import PineconeVectorStore
 from pinecone import Pinecone
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.output_parsers import StrOutputParser
+prompt = ChatPromptTemplate.from_template("""
+Responde la pregunta basándote únicamente en el siguiente contexto.
+Si la respuesta no está en el contexto, di que no tienes esa información.
+Contexto:
+{context}
+Pregunta: {question}
+""")
 
 nombre_indice="langchain-rag"
 pc = Pinecone(api_key=os.getenv("PINECONE_API_KEY"))
@@ -43,6 +52,35 @@ def guardar_fragmentos_en_pinecone():
         index_name=nombre_indice
     )
     return vectorstore
+prompt = ChatPromptTemplate.from_template("""
+Responde la pregunta basándote únicamente en el siguiente contexto.
+Si la respuesta no está en el contexto, di que no tienes esa información.
+Contexto:
+{context}
+Pregunta: {question}
+""")
+def formatear_documentos(docs):
+    return "\n\n".join(doc.page_content for doc in docs)
+def responder_pregunta(pregunta, vectorstore, llm):
+    retriever = vectorstore.as_retriever(search_kwargs={"k": 2})
+    docs = retriever.invoke(pregunta)
+    contexto = formatear_documentos(docs)
+    cadena = prompt | llm | StrOutputParser()
+    respuesta = cadena.invoke({"context": contexto, "question": pregunta})
+    return respuesta
+def chat(vectorstore, llm):
+    print("=" * 50)
+    print("Asistente BimBam - Escribe 'salir' para terminar")
+    print("=" * 50)
+    
+    while True:
+        pregunta = input("\nTú: ")
+        if pregunta.lower() in ["salir", "exit"]:
+            print("¡Hasta luego!")
+            break
+        
+        respuesta = responder_pregunta(pregunta, vectorstore, llm)
+        print(f"\nAsistente: {respuesta}")
 if __name__ == "__main__":
     #name=fragmentar_documentos()
     #print(name[18].page_content)
@@ -51,5 +89,10 @@ if __name__ == "__main__":
     #print(len(vector_prueba))
     #print(index.describe_index_stats())
     vectorstore=guardar_fragmentos_en_pinecone()
-    respuesta=vectorstore.similarity_search("cual son los casos elegibles para un reembolso o devolucion", k=1)
-    print(respuesta)
+    #respuesta=vectorstore.similarity_search("cual son los casos elegibles para un reembolso o devolucion", k=1)
+    #print(respuesta)
+    llm=ChatGoogleGenerativeAI(
+        model='gemini-3.1-flash-lite',
+        temperature=0
+    )
+    chat(vectorstore, llm)
