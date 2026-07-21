@@ -10,17 +10,7 @@ from langchain_pinecone import PineconeVectorStore
 from pinecone import Pinecone
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
-prompt = ChatPromptTemplate.from_template("""
-Responde la pregunta basándote únicamente en el siguiente contexto.
-Si la respuesta no está en el contexto, di que no tienes esa información.
-Contexto:
-{context}
-Pregunta: {question}
-""")
-
 nombre_indice="langchain-rag"
-pc = Pinecone(api_key=os.getenv("PINECONE_API_KEY"))
-index = pc.Index(nombre_indice)
 def obtener_documentos():
     lista_documentos=[]
     obtener_ruta=Path("archivos").glob("*.pdf")
@@ -68,7 +58,15 @@ def responder_pregunta(pregunta, vectorstore, llm):
     cadena = prompt | llm | StrOutputParser()
     respuesta = cadena.invoke({"context": contexto, "question": pregunta})
     return respuesta
-def chat(vectorstore, llm):
+def invocar_llm():
+    llm=ChatGoogleGenerativeAI(
+        model='gemini-3.1-flash-lite',
+        temperature=0
+    )
+    return llm
+def chat():
+    vectorstore=guardar_fragmentos_en_pinecone()
+    llm=invocar_llm()
     print("=" * 50)
     print("Asistente BimBam - Escribe 'salir' para terminar")
     print("=" * 50)
@@ -81,18 +79,5 @@ def chat(vectorstore, llm):
         
         respuesta = responder_pregunta(pregunta, vectorstore, llm)
         print(f"\nAsistente: {respuesta}")
-if __name__ == "__main__":
-    #name=fragmentar_documentos()
-    #print(name[18].page_content)
-    #modelo = crear_modelo_embeddings()
-    #vector_prueba = modelo.embed_query("prueba")
-    #print(len(vector_prueba))
-    #print(index.describe_index_stats())
-    vectorstore=guardar_fragmentos_en_pinecone()
-    #respuesta=vectorstore.similarity_search("cual son los casos elegibles para un reembolso o devolucion", k=1)
-    #print(respuesta)
-    llm=ChatGoogleGenerativeAI(
-        model='gemini-3.1-flash-lite',
-        temperature=0
-    )
-    chat(vectorstore, llm)
+
+
