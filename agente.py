@@ -64,20 +64,6 @@ def invocar_llm():
         temperature=0
     )
     return llm
-def chat():
-    vectorstore=guardar_fragmentos_en_pinecone()
-    llm=invocar_llm()
-    print("=" * 50)
-    print("Asistente BimBam - Escribe 'salir' para terminar")
-    print("=" * 50)
-    
-    while True:
-        pregunta = input("\nTú: ")
-        if pregunta.lower() in ["salir", "exit"]:
-            print("¡Hasta luego!")
-            break
-        
-        respuesta = responder_pregunta(pregunta, vectorstore, llm)
-        print(f"\nAsistente: {respuesta}")
+
 
 
