@@ -63,20 +63,24 @@ streamlit run app.py
 
 La aplicación se abrirá automáticamente en tu navegador en `http://localhost:8501`.
 
+
 ## Despliegue
 
-Este proyecto está desplegado en Hugging Face Spaces:
+Este proyecto está desplegado en Streamlit Community Cloud:
 
-🔗 [Ver aplicación en vivo](https://huggingface.co/spaces/tu_usuario/asistente-bimbam)
+🔗 [Ver aplicación en vivo](https://rag-bimbam-buy-bs6fdmjskkucmebpfqhxfn.streamlit.app)
 
 ### Cómo desplegar tu propia copia
 
-1. Crea un Space en [Hugging Face](https://huggingface.co/new-space) con SDK **Docker** + plantilla de Streamlit
-2. Sube tu código (sin `venv/` ni `.env`)
-3. Configura tus API keys en **Settings → Repository secrets**:
-   - `GOOGLE_API_KEY`
-   - `PINECONE_API_KEY`
-4. El Space se construirá y desplegará automáticamente
+1. Sube tu código a un repositorio de GitHub (sin `venv/` ni `.env`)
+2. Ve a [Streamlit Community Cloud](https://share.streamlit.io) e inicia sesión con GitHub
+3. Click en **"Create app"**, selecciona tu repositorio, rama `main` y el archivo principal `app.py`
+4. Antes de desplegar, configura tus API keys en **Advanced settings → Secrets**:
+```toml
+GOOGLE_API_KEY = "tu_key_aqui"
+PINECONE_API_KEY = "tu_key_aqui"
+```
+5. Click en **Deploy** — la app se construye y publica automáticamente
 
 ## Estructura del proyecto
 
