@@ -59,9 +59,11 @@ def responder_pregunta(pregunta, vectorstore, llm):
     respuesta = cadena.invoke({"context": contexto, "question": pregunta})
     return respuesta
 def invocar_llm():
+    google_api_key = os.getenv("Google_Api_Key")
     llm=ChatGoogleGenerativeAI(
         model='gemini-3.1-flash-lite',
-        temperature=0
+        temperature=0,
+        google_api_key=google_api_key
     )
     return llm
 
